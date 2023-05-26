@@ -1,6 +1,5 @@
 # Title
 
-
 ## Installation
 
 ```bash
@@ -24,8 +23,6 @@ python setup.py bdist_wheel sdist
 ```bash
 twine upload dist/*
 ```
-
-
 
 ERROR    HTTPError: 400 Bad Request from https://upload.pypi.org/legacy/
          File already exists. See https://pypi.org/help/#file-name-reuse for more information.
