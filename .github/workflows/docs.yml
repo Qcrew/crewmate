@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: 3.x
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+      - run: pip install mkdocstrings
 
 
       - uses: actions/cache@v3
