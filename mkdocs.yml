@@ -26,12 +26,12 @@ extra:
   homepage: https://quantumcrew.org/
 
 plugins:
-- search
-- mkdocstrings
+  - search
+  - mkdocstrings
 
 nav:
   - Home: index.md
   - utils: utils-reference.md
   - fit: fit-reference.md
   - qctrl: qctrl-reference.md
-  - test: 'index.md'
+  - cost_functions: cost_functions-reference.md

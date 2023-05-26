@@ -7,7 +7,8 @@ setup(
     author="Qcrew",
     author_email="general.qcrew@gmail.com",
     description='',
-    py_modules=['crewmate.utils'],
+    py_modules=['crewmate.utils', 'crewmate.qctrl',
+                'crewmate.fit', 'crewmate.cost_functions'],
     package_dir={
         '': 'src',
     },
