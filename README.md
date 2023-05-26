@@ -12,11 +12,7 @@ pip install crewmate
 pip install -e .
 ```
 
-## Build
-
-```bash
-python setup.py bdist_wheel sdist
-```
+## Buildpython setup.py bdist_wheel sdist
 
 ## Publish
 
@@ -34,8 +30,4 @@ Delete the contents of the dist/ folder and make sure you increased the version 
 
 ## Docs
 
-```bash
-mkdocs gh-deploy --force
-```
-
-Check out the documentation [here](https://qcrew.github.io/crewmate/)
+Check out the documentation [here](https://qcrew.github.io/crewmate/).
