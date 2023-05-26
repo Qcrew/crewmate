@@ -6,6 +6,10 @@
 pip install crewmate
 ```
 
+## Docs
+
+Check out the documentation [here](https://qcrew.github.io/crewmate/).
+
 ## Develop
 
 ```bash
@@ -26,8 +30,3 @@ HTTPError: 400 Bad Request from https://upload.pypi.org/legacy/
 File already exists. See https://pypi.org/help/#file-name-reuse for more information.
 
 Delete the contents of the dist/ folder and make sure you increased the version number in setup.py
-
-
-## Docs
-
-Check out the documentation [here](https://qcrew.github.io/crewmate/).
