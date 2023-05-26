@@ -23,13 +23,13 @@ def find_highest_populated_state(state: np.array, tolerance: float = 1e-6) -> in
 
     Examples
     --------
+    In this case state |1> is the highest populated state, considering the default tolerance of 1e-6.
     >>> find_highest_populated_state([0.99, 0.01, 0])
     1
-    State |1> is the highest populated state, considering the default tolerance of 1e-6.
 
+    Now state |0> is the highest populated state, considering a tolerance of 0.1.
     >>> find_highest_populated_state([0.99, 0.01, 0], tolerance=0.1)
     0
-    State |0> is the highest populated state, considering a tolerance of 0.1.
     """
     # Highest occupied state above tolerance
     highest = -1
