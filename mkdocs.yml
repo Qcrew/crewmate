@@ -27,7 +27,6 @@ extra:
 
 plugins:
 - search
-- mkdocstrings
 
 nav:
   - Home: index.md
