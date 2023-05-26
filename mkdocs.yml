@@ -30,8 +30,9 @@ plugins:
   - mkdocstrings
 
 nav:
-  - Home: index.md
-  - utils: utils-reference.md
-  - fit: fit-reference.md
-  - qctrl: qctrl-reference.md
-  - cost_functions: cost_functions-reference.md
+  - Get started: index.md
+  - API reference:
+    - utils: utils-reference.md
+    - fit: fit-reference.md
+    - qctrl: qctrl-reference.md
+    - cost_functions: cost_functions-reference.md
