@@ -1,14 +1,14 @@
 # Qcrew crewmate
 
+## Docs
+
+Check out the documentation [here](https://qcrew.github.io/crewmate/).
+
 ## Installation
 
 ```bash
 pip install crewmate
 ```
-
-## Docs
-
-Check out the documentation [here](https://qcrew.github.io/crewmate/).
 
 ## Develop
 
@@ -16,7 +16,11 @@ Check out the documentation [here](https://qcrew.github.io/crewmate/).
 pip install -e .
 ```
 
-## Buildpython setup.py bdist_wheel sdist
+## Build
+
+```bash
+python setup.py bdist_wheel sdist
+```
 
 ## Publish
 
