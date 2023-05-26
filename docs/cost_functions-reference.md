@@ -1,1 +1,1 @@
-::: cost_functions
+::: crewmate.cost_functions
