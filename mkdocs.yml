@@ -32,6 +32,4 @@ plugins:
 nav:
   - Home: index.md
   - utils: utils-reference.md
-  - fit: fit-reference.md
   - qctrl: qctrl-reference.md
-  - cost_functions: cost_functions-reference.md
