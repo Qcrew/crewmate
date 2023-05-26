@@ -34,3 +34,4 @@ nav:
   - utils: utils-reference.md
   - fit: fit-reference.md
   - qctrl: qctrl-reference.md
+  - test: 'index.md'
