@@ -2,6 +2,7 @@ site_name: "Qcrew crewmate"
 
 theme:
   name: material
+  logo: assets/logo.png
 
   palette:
     # Palette toggle for dark mode
@@ -20,6 +21,9 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
+
+extra:
+  homepage: https://quantumcrew.org/
 
 plugins:
 - search
