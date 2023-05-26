@@ -1,1 +1,1 @@
-::: crewmate.qctrl
+::: src/crewmate/qctrl
