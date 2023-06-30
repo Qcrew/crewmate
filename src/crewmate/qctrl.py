@@ -149,7 +149,14 @@ def displacement(graph: qctrlcommons.data_types.Graph, alpha: float, c_dim: int)
     return D
 
 
-def build_snap_sequence_params(graph: qctrlcommons.data_types.Graph, c_dim: int, seq_length: int, D_var: qctrlcommons.node.node_data.Tensor, S_var: qctrlcommons.node.node_data.Tensor, verbose: bool = False) -> list:
+def build_snap_sequence_params(
+    graph: qctrlcommons.data_types.Graph,
+    c_dim: int,
+    seq_length: int,
+    D_var: qctrlcommons.node.node_data.Tensor,
+    S_var: qctrlcommons.node.node_data.Tensor,
+    verbose: bool = False
+) -> list:
     """Bundle the displacement and SNAP parameters in the format used by the apply_D_SNAP_D_sequence function.
 
     Parameters
@@ -239,34 +246,44 @@ def apply_D_SNAP_sequence(
 
 def define_bandwidth_drive(
     graph: qctrlcommons.data_types.Graph,
-    segment_count: int,
-    duration: int,
+    variable_count: int,
+    duration: float,
     maximum: float,
-    cutoff_frequency: float
+    cutoff_frequency: float,
+    segment_count: int = -1
 ) -> qctrlcommons.node.node_data.Pwc:
-    """Define an optimizable complex pwc signal limited by the cutoff_frequency.
+    """Define an optimizable complex pwc signal limited by the `cutoff_frequency`.
+    The pulse is optimized using a number of variables `variable_count`.
+    Then the pulse is resampled in `segment_count` points and convoluted with a sinc kernel,
+    before the cost function is calculated.
 
     Parameters
     ----------
     graph : qctrlcommons.data_types.Graph
         QCTRL graph
-    segment_count : int
-        number of segments per pulse
+    variable_count : int
+        Number of optimizable variables
     duration : int
-        pulse duration [s]
+        Pulse duration [s]
     maximum : float
-        drive maximum
+        Drive maximum
     cutoff_frequency : float
-        maximum frequency allowed by the drive
+        Maximum frequency allowed by the drive
+    segment_count : int, optioinal
+        Number of pwc segments after sampling.
+        By default = -1, meaning the pulse will be sampled every nanosecond (duration * 1e9).
 
     Returns
     -------
     qctrlcommons.node.node_data.Pwc
         QCTRL complex optimizable pwc signal
     """
+    if segment_count == -1:
+        int(duration*1e9)
+
     # Define raw drive
     raw_drive = graph.utils.complex_optimizable_pwc_signal(
-        segment_count=segment_count,
+        segment_count=variable_count,
         duration=duration,
         maximum=maximum,
     )
