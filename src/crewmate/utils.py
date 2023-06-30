@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from scipy.linalg import block_diag
 
@@ -113,11 +115,11 @@ def ecd(alpha: float, chi: float, wait_time: float, c_dim: int) -> np.array:
 
 def quick_wigner(
     psi: np.array,
-    dims: np.array | list | int,
+    dims: Union[np.array, list, int],
     title: str = "Wigner",
     trace_idx: int = 1,
-    x_lim: np.array | list = [-3, 3],
-    y_lim: np.array | list = [-3, 3],
+    x_lim: Union[np.array, list] = [-3, 3],
+    y_lim: Union[np.array, list] = [-3, 3],
     pixel_count: int = 200,
     contour_levels: int = 100
 ) -> None:

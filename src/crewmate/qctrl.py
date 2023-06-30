@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from types import SimpleNamespace
 import matplotlib.pyplot as plt
@@ -207,9 +209,9 @@ def build_snap_sequence_params(
 
 def apply_D_SNAP_sequence(
     graph: qctrlcommons.data_types.Graph,
-    params: np.array | list,
+    params: Union[np.array, list],
     c_dim: int,
-    psi_init: qctrlcommons.node.node_data.Tensor | np.array
+    psi_init: Union[qctrlcommons.node.node_data.Tensor, np.array]
 ) -> qctrlcommons.node.node_data.Tensor:
     """Apply an interleaved sequence of displacement and SNAP gates (D-SNAP-D...) to psi_init.
 
