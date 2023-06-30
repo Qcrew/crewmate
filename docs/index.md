@@ -9,31 +9,26 @@ pip install crewmate
 ### Usage
 
 ```python
-from crewmate.utils import quick_wigner_qctrl
+from crewmate.utils import quick_wigner
 ```
 
 ### Examples
 
-Quick Wigner function using QCTRL
+Quickly plot Wigner functions.
 
 ```python
-import numpy as np
-from qctrl import Qctrl
-from crewmate.utils import quick_wigner_qctrl
+# import crewmate functions
+from crewmate.utils import quick_wigner
 
-# Start a Boulder Opal session.
-qctrl = Qctrl(organization="yvonne-gaos-team")
-
-# Cavity state
-c_dim = 3
-cavity_state = np.array([0, 1, 0])
-# Qubit state
+# Define system dimensions
 q_dim = 2
-qubit_state = np.array([1, 0])
+c_dim = 5
 
-# Get total state of the system
-psi = np.kron([cavity_state], [qubit_state])[0]
+# Define qubit and cavity states
+g = [1,0]
+fock1 = [0,1,0,0,0]
+psi = np.kron(g, fock1)
 
-# Plot Wigner function of the cavity state
-quick_wigner_qctrl(qctrl, psi, c_dim, q_dim)
+# Plot Wigner of the state in the cavity
+quick_wigner(psi, [q_dim, c_dim])
 ```
