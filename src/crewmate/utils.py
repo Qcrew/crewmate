@@ -1,59 +1,10 @@
 import numpy as np
-import qctrl
-import qctrlvisualizer
+from scipy.linalg import block_diag
+
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
-
-def quick_wigner_qctrl(qctrl: qctrl.Qctrl, psi: np.array, c_dim: int, q_dim: int, title="Wigner"):
-    """Plot the Wigner function of the state in the cavity starting from the full state (qubit x cavity).
-
-    Parameters
-    ----------
-    qctrl : qctrl.Qctrl
-        qctrl session reference
-    psi : np.array
-        state in the form qubit x cavity
-    c_dim : int
-        dimension of the cavity Hilbert space
-    q_dim : int
-        dimension of the qubit Hilbert space
-    title : str, optional
-        plot title, by default "Wigner"
-
-    Examples
-    --------
-    Consider psi = |cavity> x |qubit> = [1,0,0,0,0,0]
-    >>> quick_wigner_qctrl(qctrl, [1,0,0,0,0,0], 3, 2)
-    """
-
-    graph = qctrl.create_graph()
-
-    # Cavity state
-    final_cavity_state = graph.partial_trace(
-        graph.outer_product(psi, psi),
-        [c_dim, q_dim],
-        1,
-    )
-    # Wigner
-    wigner_range = 3
-    wigner_density = 128
-    # Axes for wigner plot
-    position = np.linspace(-wigner_range, wigner_range, wigner_density)
-    momentum = np.linspace(-wigner_range, wigner_range, wigner_density)
-    # Wigner transform
-    graph.wigner_transform(
-        final_cavity_state, position, momentum, name="wigner")
-
-    # Simulate system
-    simulation = qctrl.functions.calculate_graph(
-        graph=graph,
-        output_node_names=["wigner"]
-    )
-
-    qctrlvisualizer.plot_wigner_function(
-        simulation.output["wigner"]["value"], position, momentum)
-    plt.suptitle(title)
-    plt.show()
+import qutip as qt
 
 
 def find_highest_populated_state(state: np.array, tolerance: float = 1e-6) -> int:
@@ -106,3 +57,122 @@ def find_highest_populated_state(state: np.array, tolerance: float = 1e-6) -> in
         print(f"WARNING: The highest populated state coincides with the system's dimension ({highest}).\n" +
               "There could be higher occupied states that aren't being accounted for.")
     return highest
+
+
+def cd(alphas: np.array, c_dim: int) -> np.array:
+    """Get the conditional displacement matrix in a qubit-cavity system.
+    Qubit space dimension is assumed to be 2.
+
+    Parameters
+    ----------
+    alphas : np.array
+        Array containing the values of the displacements
+        (e.g. [-1,1] -> if qubit in |g> displace by -1, if qubit in |e> displace by 1).
+    c_dim : int
+        Dimension of the cavity Hilbert space.
+
+    Returns
+    -------
+    np.array
+        Conditional displacement matrix.
+
+    Examples
+    --------
+    Create a conditional displacement gate for a qubit-cavity system of dimension 2 x 15.
+    >>> cd([-1,1], 15)
+    """
+    D_gates = [qt.displace(c_dim, alpha) for alpha in alphas]
+    return block_diag(*D_gates)
+
+
+def ecd(alpha: float, chi: float, wait_time: float, c_dim: int) -> np.array:
+    """Get ECD gate matrix in a qubit-cavity system,
+    assuming the qubit space dimension = 2.
+    ECD parameter beta = 2j * alpha * sin(chi * wait_time/2)
+
+    Parameters
+    ----------
+    alpha : float
+        alpha of the first displacement gate ECD sequence.
+    chi : float
+        Dispersive coupling strength in rad*Hz.
+    wait_time : float
+        Time between the first 2 displacement gates in the ECD sequence in nanoseconds.
+    c_dim : int
+        Dimension of the cavity Hilbert space.
+
+    Returns
+    -------
+    np.array
+        ECD gate matrix.
+    """
+    beta = 2j * alpha * np.sin(chi * wait_time/2)
+    D_gates = [qt.displace(c_dim, a) for a in [-beta, beta]]
+    return np.flip(block_diag(*D_gates), 0)
+
+
+def quick_wigner(
+    psi: np.array,
+    dims: np.array or list or int,
+    title: str = "Wigner",
+    trace_idx: int = 1,
+    x_lim: np.array or list = [-3, 3],
+    y_lim: np.array or list = [-3, 3],
+    pixel_count: int = 200,
+    contour_levels: int = 100
+):
+    """Plot the Wigner function of psi. By default the system is assumed to be qubit-cavity.
+
+    Parameters
+    ----------
+    psi : np.array
+        State to plot.
+    dims : np.arrayorlistorint
+        Dimensions of components of the system.
+        (e.g. 2 dimensional qubit and 15 dimensional cavity -> dims = [2,15])
+    title : str, optional
+        Plot title, by default "Wigner"
+    trace_idx : int, optional
+        The index of the system element that you want to plot, by default 1.
+        (e.g. consider a qubit and a cavity with dimensions [2,15],
+        if you want to plot the cavity use trance_idx=1)
+    x_lim : np.arrayorlist, optional
+        Limit on the x axis, by default [-3, 3]
+    y_lim : np.arrayorlist, optional
+        Limit on the y axis, by default [-3, 3]
+    pixel_count : int, optional
+        Number of pixels, by default 200
+    contour_levels : int, optional
+        Number of contour levels, by default 100
+
+    Examples
+    --------
+    Plot the Wigner function of the cavity.
+    psi = |g>|0>, considering qubit dimension = 2 and cavity dimension = 3.
+    >>> quick_wigner([1,0,0,0,0,0], [2,3])
+
+    Plot the Wigner function of the qubit.
+    psi = |g>|0>, considering qubit dimension = 2 and cavity dimension = 3.
+    >>> quick_wigner([1,0,0,0,0,0], [2,3], trace_idx=0)
+    """
+    if len(x_lim) != 2:
+        raise print(f"Length of x_lim must be 2, but got {len(x_lim)}.")
+    if len(y_lim) != 2:
+        raise print(f"Length of y_lim must be 2, but got {len(y_lim)}.")
+    if type(dims) == 'int':
+        dims = [dims]
+
+    x = np.linspace(x_lim[0], x_lim[1], pixel_count)
+    y = np.linspace(y_lim[0], y_lim[1], pixel_count)
+    state = qt.Qobj(np.array(psi), dims=[dims, [1, 1]])
+    state_wigner = qt.wigner(state.ptrace(trace_idx), x, x)
+    # Plot
+    fig = plt.figure(figsize=(5, 4), dpi=100)
+    state_max = np.max(np.abs(np.array(state_wigner)))
+    color_norm = colors.TwoSlopeNorm(
+        vmin=-state_max, vcenter=0., vmax=state_max)
+    contour = plt.contourf(
+        x, y, state_wigner, contour_levels, cmap="bwr_r", norm=color_norm)
+    fig.colorbar(contour)
+    plt.title(title)
+    plt.show()

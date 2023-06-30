@@ -1,8 +1,13 @@
 import numpy as np
+from types import SimpleNamespace
+import matplotlib.pyplot as plt
+
+import qctrl
+import qctrlvisualizer
 import qctrlcommons
 
 
-def define_ladder_operators(graph: qctrlcommons.data_types.Graph, c_dim: int = 1, q_dim: int = 1) -> dict[str, qctrlcommons.node.node_data.Tensor]:
+def define_ladder_operators(graph: qctrlcommons.data_types.Graph, c_dim: int = 1, q_dim: int = 1) -> SimpleNamespace:
     """Generate the ladder operators for the oscillator and the qubit
 
     Parameters
@@ -17,7 +22,13 @@ def define_ladder_operators(graph: qctrlcommons.data_types.Graph, c_dim: int = 1
     Returns
     -------
     { [a, ad, q, qd]: qctrlcommons.node.node_data.Tensor }
-        Dictionary containing the ladder operators
+        SimpleNamespace containing the ladder operators
+
+    Examples
+    --------
+    Use ladder operators to compute the number operator
+    >>> ladder = define_ladder_operators(graph, 3, 2)
+    >>> n = ladder.ad @ ladder.a
     """
     ladder_operators = {
         'a': np.eye(1),
@@ -54,7 +65,59 @@ def define_ladder_operators(graph: qctrlcommons.data_types.Graph, c_dim: int = 1
         ladder_operators['q'] = q
         ladder_operators['qd'] = qd
 
-    return ladder_operators
+    return SimpleNamespace(**ladder_operators)
+
+
+def quick_wigner_qctrl(qctrl: qctrl.Qctrl, psi: np.array, c_dim: int, q_dim: int, title="Wigner"):
+    """Plot the Wigner function of the state in the cavity starting from the full state (qubit x cavity).
+
+    Parameters
+    ----------
+    qctrl : qctrl.Qctrl
+        qctrl session reference
+    psi : np.array
+        state in the form qubit x cavity
+    c_dim : int
+        dimension of the cavity Hilbert space
+    q_dim : int
+        dimension of the qubit Hilbert space
+    title : str, optional
+        plot title, by default "Wigner"
+
+    Examples
+    --------
+    Consider psi = |cavity> x |qubit> = [1,0,0,0,0,0]
+    >>> quick_wigner_qctrl(qctrl, [1,0,0,0,0,0], 3, 2)
+    """
+
+    graph = qctrl.create_graph()
+
+    # Cavity state
+    final_cavity_state = graph.partial_trace(
+        graph.outer_product(psi, psi),
+        [c_dim, q_dim],
+        1,
+    )
+    # Wigner
+    wigner_range = 3
+    wigner_density = 128
+    # Axes for wigner plot
+    position = np.linspace(-wigner_range, wigner_range, wigner_density)
+    momentum = np.linspace(-wigner_range, wigner_range, wigner_density)
+    # Wigner transform
+    graph.wigner_transform(
+        final_cavity_state, position, momentum, name="wigner")
+
+    # Simulate system
+    simulation = qctrl.functions.calculate_graph(
+        graph=graph,
+        output_node_names=["wigner"]
+    )
+
+    qctrlvisualizer.plot_wigner_function(
+        simulation.output["wigner"]["value"], position, momentum)
+    plt.suptitle(title)
+    plt.show()
 
 
 # FIXME: super inefficient implementation forced by qctrl. Should find a workaround.
@@ -209,3 +272,48 @@ def define_bandwidth_drive(
         segment_count=segment_count
     )
     return drive
+
+
+def sampleNsave(drives: np.array, gate_duration: float, file_name: str):
+    """Sample drives to 1 ns and save them in a csv file.
+
+    Parameters
+    ----------
+    drives : np.array
+        Array of drives. Each drive must be an array of drive amplitudes.
+    gate_duration : float
+        gate duration in seconds.
+    file_name : str
+        filename, will save to file_name.csv
+    """
+    drives = np.array(drives)
+
+    if (drives.ndim != 2):
+        raise "Array must be 2D, if you only have one drive use [drive]"
+
+    graph = qctrl.create_graph()
+
+    sample_times = np.linspace(0, gate_duration, int(gate_duration * 1e9))
+    # Make sure the last datapoint is within boundaries
+    sample_times[-1] -= 1e-12
+
+    for i in range(len(drives)):
+        drive_len = len(drives[i])
+        # Sample drive to 1 ns intervals
+        pwc = graph.pwc(
+            gate_duration/drive_len * np.ones(drive_len),
+            drives[i]
+        )
+        graph.sample_pwc(pwc, sample_times, name=f"d{i}")
+
+    res = qctrl.functions.calculate_graph(
+        graph=graph,
+        output_node_names=[f"d{i}" for i in range(len(drives))]
+    )
+
+    sampled_drives = []
+    for i in range(len(drives)):
+        sampled_drives.append(res.output[f"d{i}"]["value"])
+    sampled_drives = np.array(sampled_drives)
+
+    np.savetxt(f"{file_name}.csv", sampled_drives, delimiter=",")
