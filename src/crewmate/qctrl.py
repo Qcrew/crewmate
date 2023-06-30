@@ -198,7 +198,12 @@ def build_snap_sequence_params(graph: qctrlcommons.data_types.Graph, c_dim: int,
     return params
 
 
-def apply_D_SNAP_sequence(graph: qctrlcommons.data_types.Graph, params: np.array or list, c_dim: int, psi_init: qctrlcommons.node.node_data.Tensor or np.array) -> qctrlcommons.node.node_data.Tensor:
+def apply_D_SNAP_sequence(
+    graph: qctrlcommons.data_types.Graph,
+    params: np.array | list,
+    c_dim: int,
+    psi_init: qctrlcommons.node.node_data.Tensor | np.array
+) -> qctrlcommons.node.node_data.Tensor:
     """Apply an interleaved sequence of displacement and SNAP gates (D-SNAP-D...) to psi_init.
 
     Parameters
