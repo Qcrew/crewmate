@@ -120,7 +120,7 @@ def quick_wigner(
     y_lim: np.array | list = [-3, 3],
     pixel_count: int = 200,
     contour_levels: int = 100
-):
+) -> None:
     """Plot the Wigner function of psi. By default the system is assumed to be qubit-cavity.
 
     Parameters
@@ -176,3 +176,40 @@ def quick_wigner(
     fig.colorbar(contour)
     plt.title(title)
     plt.show()
+
+
+def save_drives_csv(drives: list[np.array], file_name: str) -> None:
+    """Save drives as complex numbers in a csv file.
+
+    Parameters
+    ----------
+    drives : list
+        A list containing the drives. Each drive must be a np.array.
+        IMPORTANT: if you want to save only one drive specify it as [drive]
+    file_name : str
+        File name.
+    """
+    if len(drives) > 5:
+        print("WARNING: you are trying to save more than 5 drives" +
+              "If you are trying to save just one drive you should specify it as [drive]")
+    if file_name.endswith('.csv'):
+        file_name = file_name[0:-4]
+    np.savetxt(f"{file_name}.csv", drives, dtype="complex", delimiter=",")
+
+
+def read_drives_csv(file_name: str) -> list[np.array]:
+    """Read drives from csv file.
+
+    Parameters
+    ----------
+    file_name : str
+        File name.
+
+    Returns
+    -------
+    np.array
+        Drive list.
+    """
+    if file_name.endswith('.csv'):
+        file_name = file_name[0:-4]
+    return np.genfromtxt(f"{file_name}.csv", dtype="complex", delimiter=",")
