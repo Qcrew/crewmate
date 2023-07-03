@@ -36,3 +36,5 @@ nav:
     - fit: fit-reference.md
     - qctrl: qctrl-reference.md
     - cost_functions: cost_functions-reference.md
+  - Tutorials:
+    - Wigner plot: tutorials/wigner.md

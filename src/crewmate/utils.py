@@ -115,7 +115,7 @@ def ecd(alpha: float, chi: float, wait_time: float, c_dim: int) -> np.array:
 
 def quick_wigner(
     psi: np.array,
-    dims: Union[np.array, list, int],
+    dims: Union[int, np.array, list],
     title: str = "Wigner",
     trace_idx: int = 1,
     x_lim: Union[np.array, list] = [-3, 3],
@@ -161,13 +161,14 @@ def quick_wigner(
         raise print(f"Length of x_lim must be 2, but got {len(x_lim)}.")
     if len(y_lim) != 2:
         raise print(f"Length of y_lim must be 2, but got {len(y_lim)}.")
-    if type(dims) == 'int':
+    if isinstance(dims, int):
         dims = [dims]
+        trace_idx = 0
 
     x = np.linspace(x_lim[0], x_lim[1], pixel_count)
     y = np.linspace(y_lim[0], y_lim[1], pixel_count)
     state = qt.Qobj(np.array(psi), dims=[dims, [1, 1]])
-    state_wigner = qt.wigner(state.ptrace(trace_idx), x, x)
+    state_wigner = qt.wigner(state.ptrace(trace_idx), x, y)
     # Plot
     fig = plt.figure(figsize=(5, 4), dpi=100)
     state_max = np.max(np.abs(np.array(state_wigner)))
