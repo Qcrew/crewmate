@@ -1,6 +1,6 @@
 # Wigner plot
 
-In this tutorial we'll go through how to use the `quick_wigner` utility function to plot the great Wigner functions in just one line of code.
+In this tutorial we'll go through how to use the `quick_wigner` utility function to plot great Wigner functions in just one line of code.
 
 ## Import necessary libraries
 
@@ -17,7 +17,7 @@ As the name suggests, `quick_wigner` is designed to let users plot a good Wigner
 
 ### Qubit-cavity system
 
-Consider a 3-level qubit and a 20-dimensional cavity. Now assume the qubit is the ground state and the cavity is in fock state 2.
+Consider a 3-level qubit and a 20-dimensional cavity. Now assume the qubit is the ground state $|g\rangle$ and the cavity is in $|2\rangle$.
 
 ```python
 # Define qubit and cavity dimensions
@@ -41,9 +41,10 @@ Given psi we can easily plot the Wigner function of the cavity by simply calling
 quick_wigner(psi, [q_dim, c_dim])
 ```
 
-<p align="center">
-  <img src="image/wigner/1688356812859.png" />
-</p>
+<figure markdown>
+  ![cavity_wigner](image/wigner/1688356812859.png){ width="500" }
+  <figcaption>Wigner plot of the cavity</figcaption>
+</figure>
 
 ### Cavity-qubit system
 Consider the same system as the example above, except this time the tensor product is inverted: instead of having a qubit-cavity system we have a cavity-qubit system.
@@ -76,7 +77,7 @@ quick_wigner(fock2, c_dim)
 ```
 
 ### Complex systems
-`quick_wigner` can be used to plot any sub-system, even in more complex systems, like a 1 qubit 2 cavities setup. The idea is similar to the cavity-qubit case, we just need to specify the correct `trace_idx`. In the example below we'll consider a system in which the qubit is in the ground state, cavity1 is in Fock 1, and cavity2 is in Fock2.
+`quick_wigner` can be used to plot any sub-system, even in more complex systems, like a 1 qubit 2 cavities setup. The idea is similar to the cavity-qubit case, we just need to specify the correct `trace_idx`. In the example below we'll consider a system in which the qubit is in $|g\rangle$, cavity1 is in $|1\rangle$, and cavity2 is in $|2\rangle$.
 
 ```python
 # Define qubit and cavity dimensions
@@ -106,8 +107,6 @@ quick_wigner(psi, [q_dim, c_dim, c_dim], trace_idx=1, title="Cavity 1")
 # Plot cavity 2
 quick_wigner(psi, [q_dim, c_dim, c_dim], trace_idx=2, title="Cavity 2")
 ```
-
-<p align="center">
-  <img src="image/wigner/c1.png" style="display: inline-block; max-width: 19rem;" />
-  <img src="image/wigner/c2.png" style="display: inline-block; max-width: 19rem;"/>
-</p>
+<figure markdown>
+  ![cavity_wigner](image/wigner/c1c2.png){ width="1000" }
+</figure>
