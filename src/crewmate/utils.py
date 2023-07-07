@@ -1,4 +1,5 @@
 from typing import Union
+import pickle
 
 import numpy as np
 from scipy.linalg import block_diag
@@ -197,7 +198,7 @@ def save_drives_csv(drives: list[np.array], file_name: str) -> None:
               "If you are trying to save just one drive you should specify it as [drive]")
     if file_name.endswith('.csv'):
         file_name = file_name[0:-4]
-    np.savetxt(f"{file_name}.csv", drives, dtype="complex", delimiter=",")
+    np.savetxt(f"{file_name}.csv", drives, delimiter=",")
 
 
 def read_drives_csv(file_name: str) -> list[np.array]:
@@ -216,3 +217,34 @@ def read_drives_csv(file_name: str) -> list[np.array]:
     if file_name.endswith('.csv'):
         file_name = file_name[0:-4]
     return np.genfromtxt(f"{file_name}.csv", dtype="complex", delimiter=",")
+
+
+def save_object(obj, file_name: str):
+    """Save a python object to a file.
+
+    Parameters
+    ----------
+    obj : any
+        Object to save.
+    file_name : str
+        File name, including path if needed.
+    """
+    with open(f'{file_name}', 'wb') as outp:
+        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+
+
+def read_object(file_name: str):
+    """Read python object from a file
+
+    Parameters
+    ----------
+    file_name : str
+        File name, including path if needed.
+
+    Returns
+    -------
+    any
+        Object
+    """
+    with open(f'{file_name}', 'rb') as inp:
+        return pickle.load(inp)

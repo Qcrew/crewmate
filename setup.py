@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='crewmate',
-    version='0.0.0.5',
+    version='0.0.0.6',
     url="https://github.com/Qcrew/crewmate",
     author="Qcrew",
     author_email="general.qcrew@gmail.com",
